@@ -6,10 +6,25 @@ Depends on [node-canvas](https://github.com/LearnBoost/node-canvas) which has sp
 
 ## API
 
-* `rsz(src, width, height, function (err, buf) { /* */ })`: where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
-* `rsz(src, width, height, dst, function (err) { /* */ })`: where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
-* `rsz(src, { width: w, height: h }, function (err, buf) { /* */ })`: where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
-* `rsz(src, { width: w, height: h }, dst, function (err) { /* */ })`: where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
+There is one method but multiple ways to use it:
+
+<b>rsz(src, width, height, function (err, buf) { /* */ })</b>
+
+Where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
+
+<b>rsz(src, width, height, dst, function (err) { /* */ })</b>
+
+Where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
+
+<b>rsz(src, { width: w, height: h }, function (err, buf) { /* */ })</b>
+
+Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
+
+<b>rsz(src, { width: w, height: h }, dst, function (err) { /* */ })</b>
+
+Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
+
+## Example
 
 ```js
 var rsz = require('rsz')
