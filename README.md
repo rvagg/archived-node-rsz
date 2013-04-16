@@ -1,4 +1,4 @@
-# rsz
+# rsz [![Build Status](https://secure.travis-ci.org/rvagg/node-rsz.png)](http://travis-ci.org/rvagg/node-rsz)
 
 **Resize image files or `Buffer`s**
 
