@@ -6,6 +6,7 @@ module.exports = function (src, width, height, dst, callback) {
     , _oo       = typeof width == 'object'
     , _width    = _oo ? width.width  : width
     , _height   = _oo ? width.height : height
+    , _jpeg     = _oo ? width.type == 'jpeg' : false
     , _dst      = typeof (_oo ? height : dst) == 'string'
           ? (_oo ? height : dst)
           : null
@@ -17,6 +18,24 @@ module.exports = function (src, width, height, dst, callback) {
         if (err)
           return _callback(err)
         fs.writeFile(_dst, buf, _callback)
+      }
+
+    , toBuffer = function (canvas, callback) {
+        var buf = []
+          , len = 0
+
+        canvas[_jpeg ? 'createJPEGStream' : 'createPNGStream'](_oo ? width : {})
+          .on('data', function (_buf) {
+            buf.push(_buf)
+            len += _buf.length
+          })
+          .on('error', function (err) {
+            callback(err)
+            callback = null
+          })
+          .on('end', function () {
+            callback && callback(null, Buffer.concat(buf, len))
+          })
       }
 
     , onerror = function (err) {
@@ -31,7 +50,7 @@ module.exports = function (src, width, height, dst, callback) {
         ctx.imageSmoothingEnabled = true
         ctx.drawImage(image, 0, 0, _width, _height)
 
-        canvas.toBuffer(cb)
+        toBuffer(canvas, cb)
       }
 
   image.onerror = onerror

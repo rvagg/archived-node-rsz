@@ -78,7 +78,7 @@ test('test no such file', function (t) {
 
 test('test writing straight to file', function (t) {
   var src = path.join(__dirname, 'node_modules/sz/test-data/avatar.jpg')
-    , dst = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'avatar.png')
 
   t.plan(3)
   rsz(src, 100, 200, dst, function (err) {
@@ -106,7 +106,7 @@ test('test height and width in options object', function (t) {
 
 test('test height and width in options object and write to file', function (t) {
   var src = path.join(__dirname, 'node_modules/sz/test-data/avatar.jpg')
-    , dst = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'avatar.png')
 
   t.plan(3)
   rsz(src, { width: 100, height: 200 }, dst, function (err) {
@@ -115,6 +115,43 @@ test('test height and width in options object and write to file', function (t) {
       t.notOk(err, 'no error')
       t.deepEqual(size, { width: 100, height: 200 }, 'resized image is correct size')
       fs.unlinkSync(dst)
+    })
+  })
+})
+
+test('test jpeg vs png', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/avatar.jpg')
+    , dstp = path.join(os.tmpDir(), String(Math.random()) + 'avatar.png')
+    , dstj = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+
+  t.plan(3)
+  rsz(src, { width: 300, height: 300 }, dstp, function (err) {
+    t.notOk(err, 'no error')
+    rsz(src, { width: 300, height: 300, type: 'jpeg' }, dstj, function (err) {
+      t.notOk(err, 'no error')
+      var psize = fs.statSync(dstp).size
+        , jsize = fs.statSync(dstj).size
+      t.ok(psize > jsize, 'PNG (' + psize + ') is larger than JPEG (' + jsize + ') of same image')
+    })
+  })
+})
+
+test('test jpeg high-quality vs jpeg low-quality', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/avatar.jpg')
+    , dsth = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+    , dstl = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+
+  t.plan(3)
+  rsz(src, { width: 300, height: 300, type: 'jpeg', quality: 80 }, dsth, function (err) {
+    t.notOk(err, 'no error')
+    rsz(src, { width: 300, height: 300, type: 'jpeg', quality: 50 }, dstl, function (err) {
+      t.notOk(err, 'no error')
+      var hsize = fs.statSync(dsth).size
+        , lsize = fs.statSync(dstl).size
+      t.ok(
+          hsize > lsize
+        , 'JPEG high-quality (' + hsize + ') is larger than JPEG low-quality (' + lsize + ') of same image'
+      )
     })
   })
 })

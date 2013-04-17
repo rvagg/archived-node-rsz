@@ -24,6 +24,15 @@ Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height r
 
 Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
 
+## Options
+
+By default, **rsz** will return a **PNG** `Buffer` or write a **PNG** file. You can change this when you pass an `options` object: `{ height: 100, width: 100, type: 'jpeg' }`. You can also adjust the quality with a `'quality'` property.
+
+ * <b><code>'height'</code></b> (`Number`, required) the height of the resized image
+ * <b><code>'width'</code></b> (`Number`, required) the width of the resized image
+ * <b><code>'type'</code></b> (`String`, optional, default: `'png'`) set to `'jpeg'` to return a **JPEG** `Buffer` or write a **JPEG** file.
+ * <b><code>'quality'</code></b> (`Number`, optional) used when creating a **JPEG**, a number between 1 (lowest quality) and 100 (highest quality).
+
 ## Example
 
 ```js
@@ -31,24 +40,36 @@ var rsz = require('rsz')
   , fs  = require('fs')
 
 rsz('/path/to/nyancat.gif', 200, 350, function (err, buf) {
-  fs.writeFileSync('/path/to/nyancat_200_350.gif', buf)
+  fs.writeFileSync('/path/to/nyancat_200_350.png', buf)
 })
 
 // or
 
-rsz('/path/to/nyancat.gif', 200, 350, '/path/to/nyancat_200_350.gif', function (err) {
+rsz('/path/to/nyancat.gif', 200, 350, '/path/to/nyancat_200_350.png', function (err) {
 })
 
 // or
 
 rsz('/path/to/nyancat.gif', { width: 200, height: 350 }, function (err, buf) {
-  fs.writeFileSync('/path/to/nyancat_200_350.gif', buf)
+  fs.writeFileSync('/path/to/nyancat_200_350.png', buf)
 })
 
 // or
 
-rsz('/path/to/nyancat.gif', { width: 200, height: 350 }, '/path/to/nyancat_200_350.gif', function (err) {
+rsz('/path/to/nyancat.gif', { width: 200, height: 350 }, '/path/to/nyancat_200_350.png', function (err) {
 })
+
+// or a jpeg
+
+rsz(
+    '/path/to/avatar.png'
+  , { width: 50, height: 50, type: 'jpeg', quality: 40 }
+  , '/path/to/avatar_50_50.jpg'
+  , function (err) {
+      /* ... */
+    }
+)
+
 ```
 
 ## Licence
