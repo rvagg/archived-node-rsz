@@ -47,9 +47,14 @@ module.exports = function (src, width, height, dst, callback) {
           , ctx    = canvas.getContext('2d')
           , cb     = _dst ? write : _callback
 
-        ctx.imageSmoothingEnabled = true
-        ctx.drawImage(image, 0, 0, _width, _height)
+          , drawImage = _oo && typeof width.drawImage == 'function'
+              ? width.drawImage
+              : function () {
+                  ctx.imageSmoothingEnabled = true
+                  ctx.drawImage(image, 0, 0, _width, _height)
+                }
 
+        drawImage(ctx, image, _width, _height)
         toBuffer(canvas, cb)
       }
 
