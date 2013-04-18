@@ -64,11 +64,13 @@ module.exports = function (src, width, height, dst, callback) {
   // for Windows compatibility we're only going to pass a Buffer to src
   if (Buffer.isBuffer(src)) {
     image.src = src
-  } else {
+  } else if (typeof src == 'string') {
     fs.readFile(src, function (err, buf) {
       if (err)
         return _callback(err)
       image.src = buf
     })
+  } else {
+    callback(new Error('Must provide a String path or a Buffer'))
   }
 }
