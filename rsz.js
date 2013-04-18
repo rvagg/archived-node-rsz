@@ -60,5 +60,15 @@ module.exports = function (src, width, height, dst, callback) {
 
   image.onerror = onerror
   image.onload = onload
-  image.src = src
+
+  // for Windows compatibility we're only going to pass a Buffer to src
+  if (Buffer.isBuffer(src)) {
+    image.src = src
+  } else {
+    fs.readFile(src, function (err, buf) {
+      if (err)
+        return _callback(err)
+      image.src = buf
+    })
+  }
 }
