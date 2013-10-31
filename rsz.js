@@ -1,85 +1,140 @@
 const fs     = require('fs')
     , Canvas = require('canvas')
 
-module.exports = function (src, width, height, dst, callback) {
-  var image            = new Canvas.Image()
-    , _oo              = typeof width == 'object'
-    , _width           = _oo ? width.width  : width
-    , _height          = _oo ? width.height : height
-    , _maintainRatio   = _oo ? width.aspectRatio : false
-    , _jpeg            = _oo ? width.type == 'jpeg' : false
-    , _dst             = typeof (_oo ? height : dst) == 'string'
-          ? (_oo ? height : dst)
-          : null
-    , _callback = typeof height == 'function'
-          ? height
-          : typeof dst == 'function' ? dst : callback
+module.exports = function () {
+  var src
+    , dst
+    , callback
+    , options
+    , width
+    , height
+    , maintainAspect
+    , jpeg
+    , image
+    , err
+    , i
+    , to
 
-    , write = function (err, buf) {
-        if (err)
-          return _callback(err)
-        fs.writeFile(_dst, buf, _callback)
-      }
+  for (i = 0; i < arguments.length; i++) {
+    to = typeof arguments[i]
+    if (to == 'string' || Buffer.isBuffer(arguments[i])) {
+      if (!src)
+        src = arguments[i]
+      else if (!dst && to == 'string')
+        dst = arguments[i]
+    } else if (to == 'object' && !options) {
+      options = arguments[i]
+    } else if (to == 'number') {
+      if (width == null)
+        width = arguments[i]
+      else if (height == null)
+        height = arguments[i]
+    } else if (to == 'function' && !callback) {
+     callback = arguments[i]
+    }
+  }
 
-    , toBuffer = function (canvas, callback) {
-        var buf = []
-          , len = 0
+  if (!options)
+    options = {}
 
-        canvas[_jpeg ? 'createJPEGStream' : 'createPNGStream'](_oo ? width : {})
-          .on('data', function (_buf) {
-            buf.push(_buf)
-            len += _buf.length
-          })
-          .on('error', function (err) {
-            callback(err)
-            callback = null
-          })
-          .on('end', function () {
-            callback && callback(null, Buffer.concat(buf, len))
-          })
-      }
+  if (width == null && typeof options.width == 'number')
+    width = options.width
 
-    , onerror = function (err) {
-        _callback(err)
-      }
+  if (height == null && typeof options.height == 'number')
+    height = options.height
 
-    , onload  = function () {
-        _width = _width ? _width : image.width
-        _height = _height ? _height : image.height
+  maintainAspect = options.aspectRatio || false
 
-        if (_maintainRatio) {
-          var ratio = Math.min(_width/image.width, _height/image.height)
-          _width = image.width * ratio
-          _height = image.height * ratio
-        }
-        var canvas = new Canvas(_width, _height)
-          , ctx    = canvas.getContext('2d')
-          , cb     = _dst ? write : _callback
+  if (width == null && !maintainAspect) {
+    err = new Error('must supply a `width` argument or option')
+    if (callback)
+      return callback(err)
+    throw err
+  }
 
-          , drawImage = _oo && typeof width.drawImage == 'function'
-              ? width.drawImage
-              : function () {
-                  ctx.imageSmoothingEnabled = true
-                  ctx.drawImage(image, 0, 0, _width, _height)
-                }
+  if (height == null && !maintainAspect) {
+    err = new Error('must supply a `height` argument or option')
+    if (callback)
+      return callback(err)
+    throw err
+  }
 
-        drawImage(ctx, image, _width, _height)
-        toBuffer(canvas, cb)
-      }
+  if (!(Buffer.isBuffer(src) || typeof src == 'string')) {
+    err = new Error('must supply a Buffer or a String `src` argument')
+    if (callback)
+      return callback(err)
+    throw err
+  }
+
+  jpeg = options.type == 'jpeg' || false
+  image = new Canvas.Image()
+
+  function write (err, buf) {
+    if (err)
+      return callback(err)
+    fs.writeFile(dst, buf, callback)
+  }
+
+  function toBuffer (canvas, callback) {
+    var buf = []
+      , len = 0
+
+    canvas[jpeg ? 'createJPEGStream' : 'createPNGStream'](options)
+      .on('data', function (_buf) {
+        buf.push(_buf)
+        len += _buf.length
+      })
+      .on('error', function (err) {
+        callback && callback(err)
+        callback = null
+      })
+      .on('end', function () {
+        callback && callback(null, Buffer.concat(buf, len))
+      })
+  }
+
+  function onerror (err) {
+    callback(err)
+  }
+
+  function onload () {
+    var cb = dst ? write : callback
+      , drawImage = typeof options.drawImage == 'function'
+          ? options.drawImage
+          : function () {
+              ctx.imageSmoothingEnabled = true
+              ctx.drawImage(image, 0, 0, width, height)
+            }
+      , ratio
+      , canvas
+      , ctx
+
+    width  = width ? width : image.width
+    height = height ? height : image.height
+
+    if (maintainAspect) {
+      ratio  = Math.min(width / image.width, height / image.height)
+      width  = image.width * ratio
+      height = image.height * ratio
+    }
+
+    canvas = new Canvas(width, height)
+    ctx    = canvas.getContext('2d')
+    drawImage(ctx, image, width, height)
+    toBuffer(canvas, cb)
+  }
 
   image.onerror = onerror
-  image.onload = onload
+  image.onload  = onload
 
   // for Windows compatibility we're only going to pass a Buffer to src
   if (Buffer.isBuffer(src)) {
     image.src = src
-  } else if (typeof src == 'string') {
+  } else {
     fs.readFile(src, function (err, buf) {
       if (err)
-        return _callback(err)
+        return callback(err)
       image.src = buf
     })
-  } else {
-    callback(new Error('Must provide a String path or a Buffer'))
   }
 }

@@ -17,7 +17,7 @@ There is one method but multiple ways to use it:
 
 Where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
 
-<b>rsz(src, width, height, dst, function (err) { /* */ })</b>
+<b>rsz(src, dst, width, height, function (err) { /* */ })</b>
 
 Where <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
 
@@ -25,7 +25,7 @@ Where <b><code>src</code></b> is a `String` specifying the path to the image or 
 
 Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>buf</code></b> is a `Buffer` containing the resized image data.
 
-<b>rsz(src, { width: w, height: h }, dst, function (err) { /* */ })</b>
+<b>rsz(src, dst, { width: w, height: h }, function (err) { /* */ })</b>
 
 Where <b><code>w</code></b> and <b><code>h</code></b> are the width and height respectively, <b><code>src</code></b> is a `String` specifying the path to the image or a `Buffer` containing the image data, and <b><code>dst</code></b> is a `String` specifying the path to write the output file to.
 
