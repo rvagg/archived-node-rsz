@@ -39,33 +39,53 @@ By default, **rsz** will return a **PNG** `Buffer` or write a **PNG** file. You 
  * <b><code>'quality'</code></b> (`Number`, optional) used when creating a **JPEG**, a number between 1 (lowest quality) and 100 (highest quality).
  * <b><code>'aspectRatio'</code></b> (`Boolean`, optional, default: `false`) set to
  `true` to ensure resized image has the same aspect ratio as the original image.
-## Example
+
+## Examples
 
 ```js
 var rsz = require('rsz')
   , fs  = require('fs')
 
+// output resized image as a buffer
+
 rsz('/path/to/nyancat.gif', 200, 350, function (err, buf) {
   fs.writeFileSync('/path/to/nyancat_200_350.png', buf)
 })
 
-// or
+// supply destination file directly
 
 rsz('/path/to/nyancat.gif', 200, 350, '/path/to/nyancat_200_350.png', function (err) {
 })
 
-// or
+// configure the width and height with an options object
 
 rsz('/path/to/nyancat.gif', { width: 200, height: 350 }, function (err, buf) {
   fs.writeFileSync('/path/to/nyancat_200_350.png', buf)
 })
 
-// or
+// combine options object and output destination
 
 rsz('/path/to/nyancat.gif', { width: 200, height: 350 }, '/path/to/nyancat_200_350.png', function (err) {
 })
 
-// or a jpeg
+// maintain aspect ratio
+
+rsz('/path/to/nyancat.gif', { width: 200, height: 200, aspectRatio: true }, function (err, buf) {
+})
+
+// resize only one dimension
+
+rsz('/path/to/nyancat.gif', { width: 200 }, function (err, buf) {
+
+})
+
+// resize only one dimension by setting the other dimension to 0
+
+rsz('/path/to/nyancat.gif', 200, 0, function (err, buf) {
+
+})
+
+// rsz also supports convertion between gif, png & jpeg
 
 rsz(
     '/path/to/avatar.png'
