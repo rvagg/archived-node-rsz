@@ -2,19 +2,20 @@ const fs     = require('fs')
     , Canvas = require('canvas')
 
 module.exports = function (src, width, height, dst, callback) {
-  var image     = new Canvas.Image()
-    , _oo       = typeof width == 'object'
-    , _width    = _oo ? width.width  : width
-    , _height   = _oo ? width.height : height
-    , _jpeg     = _oo ? width.type == 'jpeg' : false
-    , _dst      = typeof (_oo ? height : dst) == 'string'
+  var image            = new Canvas.Image()
+    , _oo              = typeof width == 'object'
+    , _width           = _oo ? width.width  : width
+    , _height          = _oo ? width.height : height
+    , _maintainRatio   = _oo ? width.aspectRatio : false
+    , _jpeg            = _oo ? width.type == 'jpeg' : false
+    , _dst             = typeof (_oo ? height : dst) == 'string'
           ? (_oo ? height : dst)
           : null
     , _callback = typeof height == 'function'
           ? height
           : typeof dst == 'function' ? dst : callback
 
-    , write  = function (err, buf) {
+    , write = function (err, buf) {
         if (err)
           return _callback(err)
         fs.writeFile(_dst, buf, _callback)
@@ -43,6 +44,14 @@ module.exports = function (src, width, height, dst, callback) {
       }
 
     , onload  = function () {
+        _width = _width ? _width : image.width
+        _height = _height ? _height : image.height
+
+        if (_maintainRatio) {
+          var ratio = Math.min(_width/image.width, _height/image.height)
+          _width = image.width * ratio
+          _height = image.height * ratio
+        }
         var canvas = new Canvas(_width, _height)
           , ctx    = canvas.getContext('2d')
           , cb     = _dst ? write : _callback
