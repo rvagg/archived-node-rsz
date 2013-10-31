@@ -68,6 +68,23 @@ resizeTest(
   , 500, 5
 )
 
+test('supplying 0 width should leave width untouched', function (t) {
+  t.plan(4)
+  var src = path.join(__dirname, 'node_modules/sz/test-data/nyan.gif')
+  , dst = path.join(os.tmpDir(), String(Math.random()) + 'nyan.gif')
+
+  sz(src, function (err, originalSize) {
+    t.notOk(err, 'no error')
+    rsz(src, 0, 100, dst, function (err, size) {
+      t.notOk(err, 'no error')
+      sz(dst, function (err, size) {
+        t.notOk(err, 'no error')
+        t.deepEqual(size, { width: originalSize.width, height: 100 }, 'resized image is correct size')
+      })
+    })
+  })
+})
+
 test('test no such file', function (t) {
   t.plan(2)
   rsz('foobar.gif', 10, 10, function (err, size) {
@@ -152,6 +169,69 @@ test('test jpeg high-quality vs jpeg low-quality', function (t) {
           hsize > lsize
         , 'JPEG high-quality (' + hsize + ') is larger than JPEG low-quality (' + lsize + ') of same image'
       )
+    })
+  })
+})
+
+
+test('Test maintain aspect ratio on rectangular image', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/node_logo.png')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'node_logo.png')
+  t.plan(3)
+
+  rsz(src, { width: 100, height: 100, type: 'jpeg', quality: 80, aspectRatio: true }, dst, function (err) {
+    t.notOk(err, 'no error')
+    sz(dst, function (err, size) {
+      t.notOk(err, 'no error')
+      t.deepEqual(size, { width: 100, height: 26 }, 'resized image is correct size')
+      fs.unlinkSync(dst)
+    })
+  })
+})
+
+test('Test maintain aspect ratio on square image', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/avatar.jpg')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'avatar.jpg')
+  t.plan(3)
+
+  rsz(src, { width: 100, height: 100, type: 'jpeg', quality: 80, aspectRatio: true }, dst, function (err) {
+    t.notOk(err, 'no error')
+    sz(dst, function (err, size) {
+      t.notOk(err, 'no error')
+      t.deepEqual(size, { width: 100, height: 100 }, 'resized image is correct size')
+      fs.unlinkSync(dst)
+    })
+  })
+})
+
+
+test('Test maintain aspect ratio only supplying width', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/node_logo.png')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'node_logo.png')
+  t.plan(3)
+
+  rsz(src, { width: 100, type: 'jpeg', quality: 80, aspectRatio: true }, dst, function (err) {
+    t.notOk(err, 'no error')
+    sz(dst, function (err, size) {
+      t.notOk(err, 'no error')
+      // height seems to rounds down to 26, though should be closer to 27
+      t.deepEqual(size, { width: 100, height: 26 }, 'resized image is correct size')
+      fs.unlinkSync(dst)
+    })
+  })
+})
+
+test('Test maintain aspect ratio only supplying height', function (t) {
+  var src = path.join(__dirname, 'node_modules/sz/test-data/node_logo.png')
+    , dst = path.join(os.tmpDir(), String(Math.random()) + 'node_logo.png')
+  t.plan(3)
+
+  rsz(src, {height: 27, type: 'jpeg', quality: 80, aspectRatio: true }, dst, function (err) {
+    t.notOk(err, 'no error')
+    sz(dst, function (err, size) {
+      t.notOk(err, 'no error')
+      t.deepEqual(size, { width: 100, height: 27 }, 'resized image is correct size')
+      fs.unlinkSync(dst)
     })
   })
 })

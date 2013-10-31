@@ -37,7 +37,8 @@ By default, **rsz** will return a **PNG** `Buffer` or write a **PNG** file. You 
  * <b><code>'width'</code></b> (`Number`, required) the width of the resized image
  * <b><code>'type'</code></b> (`String`, optional, default: `'png'`) set to `'jpeg'` to return a **JPEG** `Buffer` or write a **JPEG** file.
  * <b><code>'quality'</code></b> (`Number`, optional) used when creating a **JPEG**, a number between 1 (lowest quality) and 100 (highest quality).
-
+ * <b><code>'aspectRatio'</code></b> (`Boolean`, optional, default: `false`) set to
+ `true` to ensure resized image has the same aspect ratio as the original image.
 ## Example
 
 ```js
