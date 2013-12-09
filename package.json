@@ -1,7 +1,7 @@
 {
     "name"             : "rsz"
   , "description"      : "Resize images as files or Buffers"
-  , "version"          : "0.2.2"
+  , "version"          : "0.2.3"
   , "homepage"         : "https://github.com/rvagg/node-rsz"
   , "authors"          : [
         "Rod Vagg <rod@vagg.org> (https://github.com/rvagg)"
@@ -13,9 +13,9 @@
       , "url"              : "https://github.com/rvagg/node-rsz.git"
     }
   , "dependencies"     : {
-        "canvas"           : "~1.1.1"
     }
   , "peerDependencies" : {
+        "canvas"           : "~1.1.2"
     }
   , "devDependencies"  : {
         "tap"              : "*"
