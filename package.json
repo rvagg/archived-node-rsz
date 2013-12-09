@@ -19,7 +19,8 @@
     }
   , "devDependencies"  : {
         "tap"              : "*"
-      , "sz"               : "~0.0.4"
+      , "sz"               : "~0.0.5"
+      , "canvas"           : "~1.1.2"
     }
   , "scripts"          : {
         "test"             : "node ./test.js"
